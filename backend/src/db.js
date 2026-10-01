@@ -10,6 +10,12 @@ export const pool = mysql.createPool({
   charset: 'UTF8MB4_UNICODE_CI',
 });
 
+// MySQL có quản lý (Aiven...) thường để múi giờ UTC: đặt giờ Việt Nam cho mỗi kết nối
+// để NOW() trong stored procedure / trigger ghi đúng giờ địa phương
+pool.on('connection', (conn) => {
+  conn.query("SET time_zone = '+07:00'");
+});
+
 export async function query(sql, params = []) {
   const [rows] = await pool.query(sql, params);
   return rows;

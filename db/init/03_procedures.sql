@@ -365,7 +365,7 @@ BEGIN
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_Xong = 1;
 
   DROP TEMPORARY TABLE IF EXISTS tmp_SaiLech;
-  CREATE TEMPORARY TABLE tmp_SaiLech (MaSanPham INT, SoLuongTon INT, TonTheoLichSu INT);
+  CREATE TEMPORARY TABLE tmp_SaiLech (MaSanPham INT PRIMARY KEY, SoLuongTon INT, TonTheoLichSu INT);
 
   OPEN cur;
   doc_tung_dong: LOOP

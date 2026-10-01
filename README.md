@@ -68,7 +68,7 @@ frontend/src/
 - Tồn đầu kỳ được nhập bằng một phiếu kiểm kê (sản phẩm mới luôn có tồn = 0).
 - Mã trạng thái lưu không dấu: `DRAFT` / `COMPLETED` / `CANCELLED`, biến động `IMPORT` / `EXPORT` / `ADJUST`.
 
-Chi tiết các quyết định thiết kế và ánh xạ với báo cáo: xem [PLAN.md](PLAN.md).
+Chi tiết các quyết định thiết kế và ánh xạ với báo cáo: xem [PLAN.md](PLAN.md). Deploy miễn phí: xem [DEPLOY.md](DEPLOY.md).
 
 ## API chính
 

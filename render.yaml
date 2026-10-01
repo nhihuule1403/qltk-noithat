@@ -1,0 +1,29 @@
+# Render Blueprint: backend Node chạy từ backend/Dockerfile (gói Free)
+services:
+  - type: web
+    name: qltk-backend
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_NAME
+        value: QLTonKhoNoiThat
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        sync: false
+      - key: TZ
+        value: Asia/Ho_Chi_Minh

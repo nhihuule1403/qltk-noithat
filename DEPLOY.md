@@ -1,16 +1,17 @@
 # Deploy demo miễn phí
 
 ```
-Trình duyệt ──► Vercel (React)  ──►  Render (Node API)  ──►  Aiven (MySQL)
+Trình duyệt ──► Render static site (React) ──/api/*──► Render web service (Node API) ──► Aiven (MySQL)
 ```
 
 | Phần | Dịch vụ | Gói free | Lưu ý |
 |---|---|---|---|
-| Frontend | Vercel | Hobby | Build từ thư mục `frontend` |
-| Backend | Render | Free web service | Ngủ sau 15 phút không có truy cập, lần đầu mở lại chờ ~1 phút |
+| Frontend | Render static site | Free | Không ngủ, chuyển tiếp `/api/*` sang backend (không cần CORS) |
+| Backend | Render web service | Free | Ngủ sau 15 phút không có truy cập, lần đầu mở lại chờ ~1 phút |
 | MySQL | Aiven | Free (1 GB) | Không cần thẻ |
 
-Làm theo thứ tự **Aiven → Render → Vercel**, vì bước sau cần địa chỉ của bước trước.
+Cả frontend và backend được tạo cùng lúc từ file `render.yaml` (Blueprint).
+Làm theo thứ tự **Aiven → Render**.
 
 ## 1. Aiven – tạo MySQL
 
@@ -31,28 +32,29 @@ Làm theo thứ tự **Aiven → Render → Vercel**, vì bước sau cần đ�
      Chuyển sang **phương án B** bên dưới (trigger là phần bắt buộc của hệ thống).
    - Nếu báo không tạo được tài khoản `qltk_app`: vẫn deploy được, khi đó ở bước 2 dùng `avnadmin` cho `DB_USER`.
 
-## 2. Render – chạy backend
+## 2. Render – backend + frontend
 
-1. Đăng ký https://dashboard.render.com bằng GitHub → **New** → **Blueprint** → chọn repo `qltk-noithat`.
-   Render đọc file `render.yaml` và tạo service `qltk-backend`.
-2. Điền biến môi trường được hỏi:
+1. Đăng ký https://dashboard.render.com/register bằng GitHub → **New +** → **Blueprint** → chọn repo `qltk-noithat`.
+   Render đọc `render.yaml` và tạo 2 service: `qltk-backend` và `qltk-frontend`.
+2. Điền biến môi trường được hỏi cho `qltk-backend`:
 
    | Biến | Giá trị |
    |---|---|
    | `DB_HOST`, `DB_PORT` | lấy từ Aiven |
    | `DB_USER`, `DB_PASSWORD` | `qltk_app` + mật khẩu đã đặt ở bước 1 |
-   | `CORS_ORIGIN` | tạm để `*`, sửa sau khi có domain Vercel |
 
    `JWT_SECRET` được Render tự sinh.
-3. Đợi deploy xong, mở `https://<tên-service>.onrender.com/api/health` → phải thấy `{"status":"ok"}`.
+3. **Apply**, đợi cả 2 service ở trạng thái **Live**.
+4. Mở `qltk-backend`, xem địa chỉ ở đầu trang:
+   - Nếu đúng là `https://qltk-backend.onrender.com` → không cần làm gì.
+   - Nếu khác (ví dụ `https://qltk-backend-ab12.onrender.com`) → mở `qltk-frontend` → **Redirects/Rewrites**,
+     sửa dòng `/api/*` thành `https://qltk-backend-ab12.onrender.com/api/*` → **Save**.
+5. Mở địa chỉ của `qltk-frontend` (dạng `https://qltk-frontend.onrender.com`) và đăng nhập.
 
-## 3. Vercel – chạy frontend
+## 3. Kiểm tra
 
-1. Đăng ký https://vercel.com bằng GitHub → **Add New** → **Project** → chọn repo `qltk-noithat`.
-2. **Root Directory**: `frontend`. Framework tự nhận là Vite.
-3. **Environment Variables**: `VITE_API_URL` = `https://<tên-service>.onrender.com/api`
-4. **Deploy**. Xong sẽ có địa chỉ dạng `https://qltk-noithat.vercel.app`.
-5. Quay lại Render, đổi `CORS_ORIGIN` thành đúng địa chỉ Vercel đó (không có dấu `/` ở cuối) rồi lưu, Render sẽ tự deploy lại.
+- `https://<frontend>/api/health` phải trả `{"status":"ok"}` (đi qua luật chuyển tiếp tới backend).
+- Lần đầu sau khi backend ngủ có thể chờ khoảng 1 phút.
 
 ## 4. Trước khi gửi link cho giảng viên
 

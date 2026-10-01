@@ -31,8 +31,7 @@ services:
 
   - type: web
     name: qltk-frontend
-    runtime: static
-    plan: free
+    runtime: static            # static site luôn miễn phí, không khai báo plan
     rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
